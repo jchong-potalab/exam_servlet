@@ -4,6 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.AsyncContext;
+import javax.servlet.AsyncEvent;
+import javax.servlet.AsyncListener;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -46,18 +48,40 @@ public class AsyncTargetAsync  extends HttpServlet {
             logger.debug("already exists async context!");
             ac = request.getAsyncContext();
         } else {
-            // 비동기 호출이 시작된 적이 없다. 새로운 context 가 생긴다.
-            // 아마도 request가 wrapping 되서 그런듯 하다.
             logger.debug("will be create new async context!");
             ac = request.startAsync();
         }
 
+        ac.addListener(new AsyncListener() {
+            @Override
+            public void onComplete(AsyncEvent event) throws IOException {
+                logger.debug("onComplete(...) >>> " + this.getClass().getSimpleName());
+            }
+
+            @Override
+            public void onTimeout(AsyncEvent event) throws IOException {
+
+            }
+
+            @Override
+            public void onError(AsyncEvent event) throws IOException {
+
+            }
+
+            @Override
+            public void onStartAsync(AsyncEvent event) throws IOException {
+                logger.debug("onStartAsync(...) >>> " + this.getClass().getSimpleName());
+            }
+        });
+
         ac.start(()->{
+
             try {
-                Thread.sleep(5000);
+                Thread.sleep(3000);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
+
             pw.println("In Async servlet's sub thread !!!!");
             ac.complete();
         });

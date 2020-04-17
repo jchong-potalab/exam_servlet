@@ -1,11 +1,10 @@
 package com.potalab.testcase.servlet.dispatching;
 
+import com.potalab.testcase.servlet.ThreadUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.AsyncContext;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
+import javax.servlet.*;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -39,10 +38,23 @@ public class Entry extends HttpServlet {
             case "ASYNC2":
                 doAsync2(req, resp);
                 break;
+            case "ASYNC3":
+                doAsync3(req, resp);
+                break;
+            case "EXCEPTION_CASE1":
+                doSyncToAsync(req, resp);
+                break;
             default:
                 doSendError(req, resp);
 
         }
+    }
+
+    private void doSyncToAsync(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+
+        RequestDispatcher dispatcher = req.getRequestDispatcher("/dispatching/async2");
+        dispatcher.forward(req, resp);
     }
 
     private void doSendError(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -123,13 +135,74 @@ public class Entry extends HttpServlet {
     private void doAsync2(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         AsyncContext asyncContext = req.startAsync();
         asyncContext.setTimeout(0); // NO timeout
+
+        asyncContext.addListener(new AsyncListener() {
+            @Override
+            public void onComplete(AsyncEvent event) throws IOException {
+                logger.debug("onComplete(...) >>> " + this.getClass().getSimpleName());
+            }
+
+            @Override
+            public void onTimeout(AsyncEvent event) throws IOException {
+
+            }
+
+            @Override
+            public void onError(AsyncEvent event) throws IOException {
+
+            }
+
+            @Override
+            public void onStartAsync(AsyncEvent event) throws IOException {
+                logger.debug("onStartAsync(...) >>> " + this.getClass().getSimpleName());
+            }
+        });
+
+        asyncContext.dispatch("/dispatching/async2");
+        logger.debug("After calling the dispatch function ...");
+
+        PrintWriter pw = resp.getWriter();
+        pw.println("<html>");
+        pw.println("<head>");
+        pw.println("<title>Test case for async dispatch</title>");
+        pw.println("</head>");
+    }
+
+    private void doAsync3(HttpServletRequest req, HttpServletResponse resp)
+            throws IOException, ServletException {
+
+        AsyncContext asyncContext = req.startAsync();
+        asyncContext.setTimeout(0); // NO timeout
+        asyncContext.addListener(new AsyncListener() {
+            @Override
+            public void onComplete(AsyncEvent event) throws IOException {
+                logger.debug("onComplete(...) >>> " + this.getClass().getSimpleName());
+            }
+
+            @Override
+            public void onTimeout(AsyncEvent event) throws IOException {
+
+            }
+
+            @Override
+            public void onError(AsyncEvent event) throws IOException {
+
+            }
+
+            @Override
+            public void onStartAsync(AsyncEvent event) throws IOException {
+                logger.debug("onStartAsync(...) >>> " + this.getClass().getSimpleName());
+            }
+        });
         PrintWriter pw = resp.getWriter();
         pw.println("<html>");
         pw.println("<head>");
         pw.println("<title>Test case for async dispatch</title>");
         pw.println("</head>");
 
-        asyncContext.dispatch("/dispatching/async2");
+        req.getRequestDispatcher("/dispatching/async2").include(req, resp);
+        ThreadUtil.pause(3000);
+        logger.debug("Debug >>> Exit for service control block. After 3sec ...");
     }
 
 }

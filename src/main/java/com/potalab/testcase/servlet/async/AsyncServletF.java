@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @WebServlet(urlPatterns="/AsyncServletF", asyncSupported = true)
 public class AsyncServletF extends HttpServlet {
@@ -19,12 +20,17 @@ public class AsyncServletF extends HttpServlet {
 
     }
 
+    private static final int REPEAT = 10000;
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
+        logger.debug("Debug >>> 4시 6분");
+
         AsyncContext context = request.startAsync();
         ServletOutputStream output = response.getOutputStream();
-        context.setTimeout(30000);
+        context.setTimeout(1000);
         logger.debug("Debug >>> A"); // 🅐
         context.addListener(new AsyncListener() {
             @Override
@@ -48,17 +54,33 @@ public class AsyncServletF extends HttpServlet {
             }
         });
 
+        AtomicInteger atomicInteger = new AtomicInteger(0);
+
         output.setWriteListener(new WriteListener() {
             @Override
             public void onWritePossible() throws IOException {
+
                 logger.debug("Debug >>> D"); // 🅓
-                output.write(getHtml().getBytes());
+                output.write(getHtml(atomicInteger.get()).getBytes());
                 logger.debug("Debug >>> E"); // 🅔
+
+//                waitFor(3000);
+//
+//                while (true) {
+//                    if ( output.isReady()) {
+//                        atomicInteger.set(REPEAT); // next start index ...
+//                        output.write(getHtml(atomicInteger.get()).getBytes());
+//                        break;
+//                    }
+//                }
+//
+                waitFor(3000);
+//                context.complete();
             }
 
             @Override
             public void onError(Throwable throwable) {
-
+                logger.debug("Debug >>> onError(...)");
             }
         });
 
@@ -69,10 +91,11 @@ public class AsyncServletF extends HttpServlet {
         try {
             Thread.sleep(ms);
         } catch(Exception e) {
+
         }
     }
 
-    public String getHtml() {
+    public String getHtml(int start) {
         StringBuilder html = new StringBuilder();
         html.append("<!DOCTYPE html>\n");
         html.append("<html>\n");
@@ -82,7 +105,7 @@ public class AsyncServletF extends HttpServlet {
         html.append("<body>\n");
         html.append("<pre>");
         html.append("</pre>");
-        for (int i = 1; i <= 10000; i++) {
+        for (int i = start + 1; i <= start + REPEAT; i++) {
             html.append("hello world : " + i + "<br>");
         }
         html.append("</body>\n");
