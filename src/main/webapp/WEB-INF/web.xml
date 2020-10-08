@@ -4,6 +4,67 @@
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee/webapp_4_0.xsd"
          version="4.0">
     <display-name>A Simple Application</display-name>
+
+    <servlet>
+        <servlet-name>WelcomeWafull</servlet-name>
+        <servlet-class>com.potalab.sample.WelcomeWafull</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>WelcomeWafull</servlet-name>
+        <url-pattern>/servlet/example/WelcomeWafull</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>IncludeTarget</servlet-name>
+        <servlet-class>com.potalab.sample.IncludeTarget</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>IncludeTarget</servlet-name>
+        <url-pattern>/servlet/example/IncludeTarget</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>ForwardTarget</servlet-name>
+        <servlet-class>com.potalab.sample.ForwardTarget</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ForwardTarget</servlet-name>
+        <url-pattern>/servlet/example/ForwardTarget</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>ErrorTarget</servlet-name>
+        <servlet-class>com.potalab.sample.ErrorTarget</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ErrorTarget</servlet-name>
+        <url-pattern>/servlet/example/ErrorTarget</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>ErrorInErrorTarget</servlet-name>
+        <servlet-class>com.potalab.sample.ErrorInErrorTarget</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ErrorInErrorTarget</servlet-name>
+        <url-pattern>/servlet/example/ErrorInErrorTarget</url-pattern>
+    </servlet-mapping>
+
+<!--    <error-page>-->
+<!--        <error-code>404</error-code>-->
+<!--        <location>/servlet/example/ErrorTarget</location>-->
+<!--    </error-page>-->
+
+<!--    <error-page>-->
+<!--        <error-code>500</error-code>-->
+<!--        <location>/servlet/example/ErrorTarget</location>-->
+<!--    </error-page>-->
+
+<!--    <error-page>-->
+<!--        <error-code>503</error-code>-->
+<!--        <location>/servlet/example/ErrorInErrorTarget</location>-->
+<!--    </error-page>-->
+
     <context-param>
         <param-name>Webmaster</param-name>
         <param-value>webmaster@example.com</param-value>
@@ -17,10 +78,4 @@
         <welcome-file>index.html</welcome-file>
         <welcome-file>index.htm</welcome-file>
     </welcome-file-list>
-
-    <error-page>
-        <error-code>404</error-code>
-        <location>/dispatching/error</location>
-    </error-page>
-
 </web-app>

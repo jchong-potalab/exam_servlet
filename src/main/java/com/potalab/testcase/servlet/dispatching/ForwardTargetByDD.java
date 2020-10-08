@@ -1,21 +1,18 @@
 package com.potalab.testcase.servlet.dispatching;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import javax.servlet.AsyncContext;
 import javax.servlet.DispatcherType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@WebServlet(urlPatterns = "/dispatching/forward", asyncSupported = true)
-public class ForwardTarget extends HttpServlet {
-    private static final Logger logger = LoggerFactory.getLogger(ForwardTarget.class);
+public class ForwardTargetByDD extends HttpServlet {
+    private static final Logger logger = LoggerFactory.getLogger(ForwardTargetByDD.class);
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -25,7 +22,7 @@ public class ForwardTarget extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+    protected void doHead(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         processRequest(req, resp);
     }

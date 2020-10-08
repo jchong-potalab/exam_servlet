@@ -22,13 +22,15 @@ public class IncludeTarget extends HttpServlet {
     }
 
     @Override
-    protected void doHead(HttpServletRequest req, HttpServletResponse resp)
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         processRequest(req, resp);
     }
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
+        //response.sendError(500, "test error at include target!!!");
 
         PrintWriter pw = response.getWriter();
         pw.println("<body>");

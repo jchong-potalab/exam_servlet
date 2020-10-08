@@ -1,18 +1,31 @@
 package com.potalab.testcase.servlet.async;
 
+import java.io.IOException;
+import java.util.concurrent.atomic.AtomicReference;
 import javax.servlet.AsyncContext;
-import javax.servlet.ReadListener;
+import javax.servlet.AsyncEvent;
+import javax.servlet.AsyncListener;
 import javax.servlet.ServletException;
-import javax.servlet.ServletInputStream;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+
+/**
+ * Servlet Spec. 3.0 에서 정의된 내용으로만 Async Servlet 을 구현한다. 즉 NIO 관련된 리스너를 사용
+ * 하지 않는다는 뜻....
+ *
+ * 비동기를 시작하고 새로운 스레드를 만들어서 그 스레드 내에서 complete 메소드를 호출하여 페이지가
+ * 정상으로 출력되는 것을 확인한다.
+ */
 @WebServlet(value = "/AsyncServlet", asyncSupported = true)
 public class AsyncServlet extends HttpServlet {
+
+    private static Logger logger = LoggerFactory.getLogger(AsyncServlet.class);
 
     protected void doPost(HttpServletRequest request,
         HttpServletResponse response)
@@ -31,84 +44,70 @@ public class AsyncServlet extends HttpServlet {
     }
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException, IOException {
+        throws IOException {
+
         response.setContentType("text/html;charset=UTF-8");
-        PrintWriter output = response.getWriter();
-        output.println("<html>");
-        output.println("<head>");
-        output.println("<title>Reading asynchronously</title>");
-        output.println("</head>");
-        output.println("<body>");
-        output.println("<h1>Reading asynchronously</h1>");
-        output.println("<form action=\"?\" method=\"post\" name=\"testAsync\">");
-        output.println("	<input type=\"text\" name=\"text1\" value=\"금강산\" size=\"30\">");
-        output.println("	<input type=\"text\" name=\"text2\" value=\"백두산\" size=\"30\">");
-        output.println("	<input type=\"submit\" value=\"submit\">");
-        output.println("</form>");
 
+        AsyncContext asyncContext = request.startAsync();
+        asyncContext.setTimeout(3000); //3초 이 내에 타 스레드작업을 기다린다.
+        asyncContext.addListener(new AsyncListener() {
+            @Override
+            public void onComplete(AsyncEvent event) throws IOException {
 
-        AsyncContext context = request.startAsync(request, response);
-        System.out.println("Debug 1 >>> " + context.hasOriginalRequestAndResponse());
-
-        ServletInputStream input = request.getInputStream();
-        input.setReadListener(new ReadingListener(input, context));
-
-        output.println("</body>");
-        output.println("</html>");
-        output.flush();
-        context.start(()->{
-
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             }
 
-            System.out.println("Debug 2 >>> " + context.hasOriginalRequestAndResponse());
-            output.println(String.format("<h3>In thread Process !!! request is %s, response is %s</h3>"
-                , context.getRequest().getClass().getName()
-                , context.getResponse().getClass().getName()));
+            @Override
+            public void onTimeout(AsyncEvent event) throws IOException {
+                asyncContext.complete(); // Tomcat은 이 코드가 없어도 문제가 안 되나,
+                                         // Jetty 그렇지 않다.
+            }
 
-            context.complete();
+            @Override
+            public void onError(AsyncEvent event) throws IOException {
 
+            }
+
+            @Override
+            public void onStartAsync(AsyncEvent event) throws IOException {
+
+            }
         });
 
-    }
+        ServletOutputStream sos = response.getOutputStream();
+        AtomicReference<IOException> exceptionStock = new AtomicReference<>(null);
+        asyncContext.start(()->{
 
+            logger.debug("Current thread name >>> {}", Thread.currentThread().getName() );
 
-    private static class ReadingListener implements ReadListener {
-
-        private ServletInputStream input = null;
-        private AsyncContext context = null;
-
-        public ReadingListener(ServletInputStream in, AsyncContext ac) {
-            this.input = in;
-            this.context = ac;
-        }
-
-        @Override
-        public void onDataAvailable() {
             try {
-                int len = -1;
-                byte[] b = new byte[1024];
-                while (input.isReady() && (len = input.read(b)) != -1) {
-                    String data = new String(b, 0, len);
-                    System.out.print("--> " +data);
-                }
-            } catch (IOException ex) {
-                //logger.log(SEVERE, null, ex);
+                sos.write(getHtml().getBytes());
+            } catch (IOException e) {
+                exceptionStock.set(e);
             }
-        }
+            asyncContext.complete();
+        });
 
-        @Override
-        public void onAllDataRead() {
-
+        IOException e;
+        if ((e = exceptionStock.get()) != null ) {
+            throw e;
         }
+    } // 이 블럭(Servlet#service)을 빠져 나가야 timeout, complete, dispatch 가 작용한다.
 
-        @Override
-        public void onError(Throwable t) {
-            //logger.log(SEVERE, "onError executed", t);
-            context.complete();
-        }
+    public String getHtml() {
+        StringBuilder html = new StringBuilder();
+        html.append("<!DOCTYPE html>\n");
+        html.append("<html>\n");
+        html.append("<head>\n");
+        html.append("    <title>Hello World!</title>\n");
+        html.append("</head>\n");
+        html.append("<body>\n");
+        html.append("<h1>");
+        html.append("First Async Test !!!" );
+        html.append("</h1>");
+        html.append("</body>\n");
+        html.append("</html>\n");
+        return html.toString();
     }
+
+
 }

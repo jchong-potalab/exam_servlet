@@ -1,6 +1,7 @@
 package com.potalab.testcase.servlet.dispatching;
 
 import javax.servlet.DispatcherType;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -26,8 +27,11 @@ public class ErrorTarget extends HttpServlet {
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        PrintWriter pw = response.getWriter();
 
+//        RequestDispatcher rd = request.getRequestDispatcher("/dispatching/forward");
+//        rd.forward(request, response);
+
+        PrintWriter pw = response.getWriter();
         pw.print(get404Html(request.getDispatcherType()));
     }
 
