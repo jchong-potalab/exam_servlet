@@ -7,7 +7,8 @@
 
     <servlet>
         <servlet-name>WelcomeWafull</servlet-name>
-        <servlet-class>com.potalab.sample.WelcomeWafull</servlet-class>
+        <async-supported>true</async-supported>
+        <servlet-class>com.potalab.wafull.sample.WelcomeWafull</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>WelcomeWafull</servlet-name>
@@ -16,7 +17,7 @@
 
     <servlet>
         <servlet-name>IncludeTarget</servlet-name>
-        <servlet-class>com.potalab.sample.IncludeTarget</servlet-class>
+        <servlet-class>com.potalab.wafull.sample.IncludeTarget</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>IncludeTarget</servlet-name>
@@ -25,7 +26,7 @@
 
     <servlet>
         <servlet-name>ForwardTarget</servlet-name>
-        <servlet-class>com.potalab.sample.ForwardTarget</servlet-class>
+        <servlet-class>com.potalab.wafull.sample.ForwardTarget</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>ForwardTarget</servlet-name>
@@ -34,7 +35,7 @@
 
     <servlet>
         <servlet-name>ErrorTarget</servlet-name>
-        <servlet-class>com.potalab.sample.ErrorTarget</servlet-class>
+        <servlet-class>com.potalab.wafull.sample.ErrorTarget</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>ErrorTarget</servlet-name>
@@ -43,11 +44,20 @@
 
     <servlet>
         <servlet-name>ErrorInErrorTarget</servlet-name>
-        <servlet-class>com.potalab.sample.ErrorInErrorTarget</servlet-class>
+        <servlet-class>com.potalab.wafull.sample.ErrorInErrorTarget</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>ErrorInErrorTarget</servlet-name>
         <url-pattern>/servlet/example/ErrorInErrorTarget</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>AsyncTarget</servlet-name>
+        <servlet-class>com.potalab.wafull.sample.AsyncTarget</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AsyncTarget</servlet-name>
+        <url-pattern>/servlet/example/AsyncTarget</url-pattern>
     </servlet-mapping>
 
 <!--    <error-page>-->

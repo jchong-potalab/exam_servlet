@@ -1,4 +1,4 @@
-package com.potalab.sample;
+package com.potalab.wafull.sample;
 
 import java.io.IOException;
 import javax.servlet.RequestDispatcher;
@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class ErrorInErrorTarget extends HttpServlet {
+public class ErrorTarget extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -22,7 +22,7 @@ public class ErrorInErrorTarget extends HttpServlet {
         os.println("<title>Wafull sample page by PotaLab Inc.</title>");
         os.println("</head>");
         os.println("<body>");
-        os.println(String.format("<h1>2: Hello WAFULL world !!! Current Dispatcher Type is - %s</h1>",
+        os.println(String.format("<h1>Hello WAFULL world !!! Current Dispatcher Type is - %s</h1>",
             req.getDispatcherType()));
 
         String requestUri = (String)req.getAttribute(RequestDispatcher.ERROR_REQUEST_URI);
@@ -48,8 +48,6 @@ public class ErrorInErrorTarget extends HttpServlet {
         os.println("</body>");
         os.println("</html>");
         os.flush();
-
-        throw new RuntimeException("RuntimeException in Error Page");
     }
 
     private String getCallStackFormattedMessage(Throwable throwable) {
