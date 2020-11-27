@@ -60,6 +60,40 @@
         <url-pattern>/servlet/example/AsyncTarget</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>JdbcConnPoolExam</servlet-name>
+        <servlet-class>com.potalab.wafull.sample.JdbcConnPoolExam</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>JdbcConnPoolExam</servlet-name>
+        <url-pattern>/servlet/example/JdbcConnPoolExam</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>MappingMatchPath</servlet-name>
+        <servlet-class>com.potalab.wafull.sample.MappingMatchPath</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>MappingMatchPath</servlet-name>
+        <url-pattern>/servlet/example/MappingMatchPath/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>FileUpload</servlet-name>
+        <async-supported>true</async-supported>
+        <servlet-class>com.potalab.wafull.sample.FileUpload</servlet-class>
+        <multipart-config>
+            <location>C:\attaches</location>
+            <max-file-size>-1</max-file-size>
+            <max-request-size>-1</max-request-size>
+            <file-size-threshold>1024</file-size-threshold>
+        </multipart-config>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>FileUpload</servlet-name>
+        <url-pattern>/servlet/example/FileUpload</url-pattern>
+    </servlet-mapping>
+
 <!--    <error-page>-->
 <!--        <error-code>404</error-code>-->
 <!--        <location>/servlet/example/ErrorTarget</location>-->
@@ -88,4 +122,12 @@
         <welcome-file>index.html</welcome-file>
         <welcome-file>index.htm</welcome-file>
     </welcome-file-list>
+
+    <resource-ref>
+        <description>DB Connection</description>
+        <res-ref-name>jdbc/mariadb</res-ref-name>
+        <res-type>javax.sql.DataSource</res-type>
+        <res-auth>Container</res-auth>
+    </resource-ref>
+
 </web-app>

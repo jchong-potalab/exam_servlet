@@ -19,6 +19,8 @@ repositories {
 
 dependencies {
 
+    // https://mvnrepository.com/artifact/javax.ws.rs/javax.ws.rs-api
+    compile group: 'javax.ws.rs', name: 'javax.ws.rs-api', version: '2.1.1'
     providedCompile group: 'javax.servlet', name: 'javax.servlet-api', version: '4.0.1'
     compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
 
